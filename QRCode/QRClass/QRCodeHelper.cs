@@ -14,7 +14,39 @@ namespace QRCode
     /// </summary>
     public class QRCodeHelper
     {
-        private string ExceptionString = string.Empty;
+        /// <summary>
+        /// 创建二维码
+        /// </summary>
+        /// <param name="str">内容</param>
+        /// <param name="encodeMode">编码模式</param>
+        /// <param name="errorCorrect">容错</param>
+        /// <param name="versionNum">版本</param>
+        /// <param name="scale">比例</param>
+        /// <returns></returns>
+        public Bitmap CreateCode(QrCodeParam param)
+        {
+            try
+            {
+                QRCodeEncoder encoder = new QRCodeEncoder();
+                encoder.QRCodeEncodeMode = param.QRCodeEncodeMode;
+                encoder.QRCodeErrorCorrect = param.QRCodeErrorCorrect;
+                //设置二维码所能包含的字符信息量(http://www.cnblogs.com/wallis0922/archive/2013/01/22/2870979.html)
+                encoder.QRCodeVersion = param.QRCodeVersion;
+                //设置编码测量度最大40
+                encoder.QRCodeScale = param.QRCodeScale;
+                //前景色
+                encoder.QRCodeForegroundColor = param.QRCodeForegroundColor;
+                //背景色
+                encoder.QRCodeBackgroundColor = param.QRCodeBackgroundColor;
+                //数字、文字、字母作加密成QRCode条码
+                return encoder.Encode(param.Content);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         /// <summary>
         /// 处理位图
         /// </summary>
@@ -48,85 +80,6 @@ namespace QRCode
             return bitmap;
         }
         /// <summary>
-        /// 创建二维码
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="CT"></param>
-        /// <param name="CC"></param>
-        /// <param name="VersionNum"></param>
-        /// <param name="CreateSize"></param>
-        /// <returns></returns>
-        public Bitmap CreateCode(string str, CodeType CT, Correct CC, int VersionNum, int CreateSize)
-        {
-            try
-            {
-                QRCodeEncoder encoder = new QRCodeEncoder();
-                switch (CT)
-                {
-                    case CodeType.Byte://对英文字母作加密
-                        encoder.QRCodeEncodeMode = QRCodeEncoder.ENCODE_MODE.BYTE;
-                        break;
-                    case CodeType.AlphaNumeric://对大写字母作加密
-                        encoder.QRCodeEncodeMode = QRCodeEncoder.ENCODE_MODE.ALPHA_NUMERIC;
-                        break;
-                    case CodeType.Numeric://对数字作加密
-                        encoder.QRCodeEncodeMode = QRCodeEncoder.ENCODE_MODE.NUMERIC;
-                        break;
-                    default://默认为大写字母作加密
-                        encoder.QRCodeEncodeMode = QRCodeEncoder.ENCODE_MODE.ALPHA_NUMERIC;
-                        break;
-                }
-                switch (CC)
-                {
-                    case Correct.L://7%的字码可被修正
-                        encoder.QRCodeErrorCorrect = QRCodeEncoder.ERROR_CORRECTION.L;
-                        break;
-                    case Correct.M://15%的字码可被修正
-                        encoder.QRCodeErrorCorrect = QRCodeEncoder.ERROR_CORRECTION.M;
-                        break;
-                    case Correct.Q://25%的字码可被修正
-                        encoder.QRCodeErrorCorrect = QRCodeEncoder.ERROR_CORRECTION.Q;
-                        break;
-                    case Correct.H:Q://30%的字码可被修正
-                        encoder.QRCodeErrorCorrect = QRCodeEncoder.ERROR_CORRECTION.H;
-                        break;
-                    default://默认为30%
-                        encoder.QRCodeErrorCorrect = QRCodeEncoder.ERROR_CORRECTION.H;
-                        break;
-                }
-                //设置二维码所能包含的字符信息量(http://www.cnblogs.com/wallis0922/archive/2013/01/22/2870979.html)
-                encoder.QRCodeVersion = VersionNum;
-                //设置二维码比例
-                encoder.QRCodeScale = CreateSize;
-                //数字、文字、字母作加密成QRCode条码
-                return encoder.Encode(str);
-            }
-            catch (Exception exception)
-            {
-                this.ExceptionString = exception.Message;
-                return null;
-            }
-        }
-        /// <summary>
-        /// 生成二维码
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="SaveFile"></param>
-        public string CreateNewCode(string str, string savePath, EncoderAttribute attr)
-        {
-            string path = "";
-            try
-            {
-                Bitmap bitmap = this.BitmapTo2Bpp(CreateCode(str, attr.CodeType, attr.Correct, attr.QRVersion, attr.QRScale));
-               path= SaveBitmap(bitmap, savePath);
-            }
-            catch (Exception exception)
-            {
-                this.ExceptionString = exception.Message;
-            }
-            return path;
-        }
-        /// <summary>
         /// 保存位图
         /// </summary>
         /// <param name="bitmap"></param>
@@ -147,46 +100,9 @@ namespace QRCode
             }
             catch (Exception exception)
             {
-                this.ExceptionString = exception.Message;
             }
             return resFile;
         }
-    }
-    /// <summary>
-    /// 加密方式
-    /// </summary>
-    public enum CodeType
-    {
-        Byte,
-        AlphaNumeric,
-        Numeric
-    }
-    /// <summary>
-    /// 修正方式
-    /// </summary>
-    public enum Correct
-    {
-        L,
-        M,
-        Q,
-        H
-    }
-    /// <summary>
-    /// 属性
-    /// </summary>
-    public class EncoderAttribute
-    {
-        public EncoderAttribute(CodeType codeType, Correct correct, int version, int scale)
-        {
-            CodeType = codeType;
-            Correct = correct;
-            QRVersion = version;
-            QRScale = scale;
-        }
-        public CodeType CodeType;
-        public Correct Correct;
-        public int QRVersion = 5;
-        public int QRScale = 2;
     }
 }
 

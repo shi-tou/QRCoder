@@ -1,0 +1,22 @@
+﻿{
+  //编码模式：(0-ALPHA_NUMERIC 2-NUMERIC 3-BYTE)
+  "QRCodeEncodeMode": 0,
+  //容错值：（0-L,1-M，3-Q,4-H）
+  "QRCodeErrorCorrect": 3,
+  //字符容量
+  "QRCodeVersion": 0,
+  //比例
+  "QRCodeScale": 4
+}
+  
+
+                           
+
+
+
+
+
+
+
+
+
